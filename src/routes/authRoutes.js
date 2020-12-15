@@ -2,18 +2,10 @@
 
 // 3rd Party Resources
 const express = require('express');
+const router = express.Router();
 const bcrypt = require('bcrypt');
 const base64 = require('base-64');
 const mongoose = require('mongoose');
-
-// Prepare the express app
-const app = express();
-
-// Process JSON input and put the data on req.body
-app.use(express.json());
-
-// Process FORM intput and put the data on req.body
-app.use(express.urlencoded({ extended: true }));
 
 // Create a mongoose model
 const usersSchema = mongoose.Schema({
@@ -26,21 +18,21 @@ const Users = mongoose.model('users', usersSchema);
 // Two ways to test this route with httpie
 // echo '{"username":"john","password":"foo"}' | http post :3000/signup
 // http post :3000/signup usernmae=john password=foo
-app.post('/signup', async (req, res) => {
+router.post('/signup', async (req, res) => {
 
   try {
     req.body.password = await bcrypt.hash(req.body.password, 10);
     const user = new Users(req.body);
     const record = await user.save(req.body);
-    res.status(200).json(record);
-  } catch (e) { res.status(403).send("Error Creating User"); }
+    res.status(201).json(record);
+  } catch (e) { res.status(403).send('Error Creating User'); }
 });
 
 
 // Signin Route -- login with username and password
 // test with httpie
 // http post :3000/signin -a john:foo
-app.post('/signin', async (req, res) => {
+router.post('/signin', async (req, res) => {
 
   /*
     req.headers.authorization is : "Basic sdkjdsljd="
@@ -65,20 +57,22 @@ app.post('/signin', async (req, res) => {
     3. Either we're valid or we throw an error
   */
   try {
-    const user = await Users.findOne({ username: username })
-    const valid = await bcrypt.compare(password, user.password);
-    if (valid) {
-      res.status(200).json(user);
+    const user = await Users.findOne({ username: username });
+    if (user) { // If a user was found...
+      const valid = await bcrypt.compare(password, user.password);
+      if (valid) { // If the password matches...
+        res.status(200).json(`${user.username} is now authenticated.`); // Send back the username
+      } else { // Password didn't match...
+        throw new Error('Invalid Password');
+      }
+    } else { // If the user was not found...
+      throw new Error('Invalid User');
     }
-    else {
-      throw new Error('Invalid User')
-    }
-  } catch (error) { res.status(403).send("Invalid Login"); }
+  } catch (error) {
+    // Send back a generic error message of 'Invalid Login'
+    res.status(403).send('Invalid Login');
+  }
 
 });
 
-mongoose.connect('mongodb://localhost:27017/auth', { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    app.listen(3000, () => console.log('server up'));
-  })
-  .catch(e => console.error('Could not start server', e.message));
+module.exports = router;
