@@ -6,8 +6,8 @@
 
 ### Links and Resources
 
-- [CI/CD](https://github.com/jeremyp-401-advanced-javascript/basic-auth/actions) (GitHub Actions)
-- [Back-end Application]()
+- [CI/CD](https://github.com/jeremyp-401-advanced-javascript/basic-auth/actions) (GitHub Actions) (Currently Incomplete)
+- [Back-end Application]() (Currently Incomplete)
 - API Endpoints - Relative to Back-end Application URL above.
 
 ---
