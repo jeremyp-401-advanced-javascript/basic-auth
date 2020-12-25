@@ -7,7 +7,7 @@
 ### Links and Resources
 
 - [CI/CD](https://github.com/jeremyp-401-advanced-javascript/basic-auth/actions) (GitHub Actions)
-- [Back-end Application](jeremyp-401-advanced-javascript/basic-auth)
+- [Back-end Application](https://jeremyp-basic-auth.herokuapp.com/)
 - API Endpoints - Relative to Back-end Application URL above.
 
 ---
